@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+    <!--扫描控制层和业务层的相关的类 -->
+    <context:component-scan base-package="com.zsn.controller"></context:component-scan>
+    <context:component-scan base-package="com.zsn.service"></context:component-scan>
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:jdbc.properties"/>
+    </bean>
+    <!--spring 和mybatis配置   开始 -->
+    <!--<!—配置数据源 &ndash;&gt;-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="${initialSize}"></property>
+        <!-- 连接池最大数量 -->
+        <property name="maxActive" value="${maxActive}"></property>
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdle" value="${maxIdle}"></property>
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="${minIdle}"></property>
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxWait" value="${maxWait}"></property>
+    </bean>
+    <!-- 将连接数据库四大参数相关的类注入到ioc容器 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <!--pageHelper-->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <!--使用下面的方式配置参数，一行配置一个 -->
+                        <value>
+                            helperDialect=mysql
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+        <!--扫描mybatis相关xml -->
+        <property name="configLocation" value="classpath:mybatis.xml"></property>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--确定mybatis相关的接口的位置  -->
+        <property name="basePackage" value="com.zsn.mapper"></property>
+        <!-- 确定sqlSessionFactory -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+    <!--spring 和mybatis配置   结束 -->
+    <!--扫描注解  开始 -->
+    <!--扫描spring相关的注解  -->
+    <context:annotation-config></context:annotation-config>
+    <!--扫描mvc相关的注解  -->
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+    <!--扫描注解  结束 -->
+    <!--释放静态资源开始....-->
+    <mvc:default-servlet-handler></mvc:default-servlet-handler>
+    <mvc:resources mapping="/static/**" location="/static/"></mvc:resources>
+
+    <!--释放静态资源结束...-->
+    <!--配置spring MVC  开始-->
+
+    <!--因为加载spring webmvc类时，会自动去加载这个包下DispatcherServlet.properties文件，
+    里面配置一些需要处理器，控制器，所以说只需要配置视图解析器  -->
+
+
+    <!--配置spring MVC  结束-->
+
+    <!-- 关于Mybatis-spring 的事务管理器-->
+    <bean id="dstm"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--将编程式事务管理需要的模板注入到ioc容器  -->
+    <bean id="transactionTemplat" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="dstm"/>
+    </bean>
+    <!-- 开启注解事务 -->
+    <tx:annotation-driven transaction-manager="dstm"/>
+    <!-- 	end 事务管理 -->
+
+
+    <!--声明式事务管理  -->
+    <!-- 配置业务层代理 -->
+    <!--  <bean id="accountServiceProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        配置目标对象
+        <property name="target" ref="billServiceImpl"/>
+        注入事务管理器
+        <property name="transactionManager" ref="dstm"/>
+        注入事务的属性
+        <property name="transactionAttributes">
+            <props>
+            	key代表事务作用的那个方法名   后面的PROPAGATION_REQUIRED传播行为
+                <prop key="tranfer2">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>  -->
+    <!-- 配置多媒体文件解析器 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设定默认编码 -->
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <!-- 设定文件上传的最大值2MB， 2*1024*1024 -->
+        <property name="maxUploadSize" value="2097152"></property>
+        <!--resolveLazily属性启用是为了推迟文件解析，以便在UploadAction 中捕获文件大小异常-->
+        <property name="resolveLazily" value="true"/>
+    </bean>
+    <!-- 定义跳转的文件的前后缀 ，视图模式配置-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp" />
+    </bean>
+</beans>

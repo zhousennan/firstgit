@@ -1,0 +1,4 @@
+com\zsn\pojo\Person.class
+com\zsn\mapper\PersonMapper.class
+com\zsn\controller\PersonController.class
+com\zsn\service\PersonService.class

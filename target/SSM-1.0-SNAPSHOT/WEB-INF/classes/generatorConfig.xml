@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<!-- 这个文件，是 MyBatis Generator 的配置文件，真正的黑科技，根据数据库自动生成Bean和Mapper -->
+<generatorConfiguration>
+    <!-- 配置驱动，写你的数据库驱动位置 -->
+    <classPathEntry
+            location="G:\jar\mysql-connector-java-5.1.47.jar"/>
+    <context id="context1">
+
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!-- 在这写上你的数据库链接信息 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/yiqing?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=true"
+                        userId="root" password="1234"/>
+        <!-- 这写上你要把数据表映射的Bean生成在哪 -->
+        <javaModelGenerator targetPackage="com.zsn.pojo"
+                            targetProject="src/main/java"/>
+        <!-- 这写上你要把查询映射的XML生成在哪 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources/" />
+        <!-- 这写上你要把查询映射的接口生成在哪 -->
+        <javaClientGenerator targetPackage="com.zsn.mapper"
+                             targetProject="src/main/java" type="XMLMAPPER"/>
+
+        <!-- 这一部分写你要把哪张表生成Bean，参数名浅显易懂，下面可以写多个table -->
+        <!-- 后面那一大串false的意思是是否生成增删改查的例子，一般来说可以生成
+
+
+
+        <table tableName="authority" domainObjectName="Authority"
+            enableCountByExample="false" enableUpdateByExample="false"
+            enableDeleteByExample="false" enableSelectByExample="false"
+            selectByExampleQueryId="false"></table>
+        <table tableName="department_info" domainObjectName="DepartmentInfo"
+            enableCountByExample="false" enableUpdateByExample="false"
+            enableDeleteByExample="false" enableSelectByExample="false"
+            selectByExampleQueryId="false"></table>
+        <table tableName="position" domainObjectName="Position"
+            enableCountByExample="false" enableUpdateByExample="false"
+            enableDeleteByExample="false" enableSelectByExample="false"
+            selectByExampleQueryId="false"></table>
+        <table tableName="role_authr" domainObjectName="RoleAuthr"
+            enableCountByExample="false" enableUpdateByExample="false"
+            enableDeleteByExample="false" enableSelectByExample="false"
+            selectByExampleQueryId="false"></table>
+        <table tableName="user" domainObjectName="User"
+            enableCountByExample="false" enableUpdateB
+            yExample="false"
+            enableDeleteByExample="false" enableSelectByExample="false"
+            selectByExampleQueryId="false"></table>-->
+        <table tableName="permission" domainObjectName="Permission"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false"></table>
+    </context>
+</generatorConfiguration>
